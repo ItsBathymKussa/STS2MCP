@@ -198,7 +198,9 @@ async def menu_select(option: str, seed: str | None = None) -> str:
         option: Option ID from the current menu state's options list. If an
             option is listed under blocked_options, selecting it returns the
             API's manual-action response instead of forcing UI entry.
-        seed: Optional seed for supported embark flows. Standard mode rejects seeds.
+        seed: Optional seed for supported embark flows. This compatibility fork
+            supports standard singleplayer seeded embark on STS2 v0.111.0.
+            Multiplayer remains subject to the game's lobby restrictions.
     """
     body: dict = {"action": "menu_select", "option": option}
     if seed is not None:

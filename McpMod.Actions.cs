@@ -33,6 +33,9 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Potions;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Nodes.Screens.GameOverScreen;
@@ -1618,9 +1621,13 @@ public static partial class McpMod
         if (string.Equals(option, "confirm", System.StringComparison.OrdinalIgnoreCase) ||
             string.Equals(option, "embark", System.StringComparison.OrdinalIgnoreCase))
         {
+            var embarkBtn = GetInstanceFieldValue(charSelect, "_embarkButton");
+            if (embarkBtn is not NClickableControl embarkClickable || !embarkClickable.IsEnabled)
+                return Error("Embark button not available — select a character first");
+
             if (!string.IsNullOrWhiteSpace(seed))
             {
-                seed = seed.Trim();
+                seed = SeedHelper.CanonicalizeSeed(seed);
                 if (charSelect.Lobby == null)
                 {
                     return Error("Seeded embark is not supported for standard singleplayer from this API. Seed was not applied and the run was not started.");
@@ -1628,7 +1635,19 @@ public static partial class McpMod
 
                 try
                 {
-                    charSelect.Lobby.SetSeed(seed);
+                    if (charSelect.Lobby.NetService.Type == NetGameType.Singleplayer
+                        && charSelect.Lobby.GameMode == GameMode.Standard)
+                    {
+                        // v0.111.0 gives standard SP a lobby, but SetSeed rejects
+                        // standard mode. Use the same public seed override as AutoSlayer.
+                        if (NGame.Instance == null)
+                            return Error("Game instance is not available for seeded embark");
+                        NGame.Instance.DebugSeedOverride = seed;
+                    }
+                    else
+                    {
+                        charSelect.Lobby.SetSeed(seed);
+                    }
                 }
                 catch (System.Exception ex)
                 {
@@ -1636,14 +1655,9 @@ public static partial class McpMod
                 }
             }
 
-            var embarkBtn = GetInstanceFieldValue(charSelect, "_embarkButton");
-            if (embarkBtn is NClickableControl embarkClickable && embarkClickable.IsEnabled)
-            {
-                var msg = string.IsNullOrEmpty(seed) ? "Embarking on run" : $"Embarking on run (seed: {seed})";
-                embarkClickable.ForceClick();
-                return new Dictionary<string, object?> { ["status"] = "ok", ["message"] = msg };
-            }
-            return Error("Embark button not available — select a character first");
+            var msg = string.IsNullOrEmpty(seed) ? "Embarking on run" : $"Embarking on run (seed: {seed})";
+            embarkClickable.ForceClick();
+            return new Dictionary<string, object?> { ["status"] = "ok", ["message"] = msg };
         }
 
         var buttons = FindAll<NCharacterSelectButton>(charSelect);

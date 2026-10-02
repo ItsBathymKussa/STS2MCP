@@ -645,7 +645,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "httpx", specifier = ">=0.25.0" },
-    { name = "mcp", specifier = ">=1.7.1" },
+    { name = "mcp", specifier = ">=1.7.1,<2" },
 ]
 
 [[package]]

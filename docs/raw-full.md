@@ -1078,7 +1078,7 @@ Select an option from the main menu, a menu submenu, profile select, character s
 | Parameter | Type | Required | Description |
 |---|---|---|---|
 | `option` | string | Yes | One of the current state's advertised menu options. Matching is case-insensitive. |
-| `seed` | string | No | Only supported in menu contexts that expose a real seeded flow. Standard singleplayer character select currently returns an error without starting a run when `seed` is supplied. |
+| `seed` | string | No | On STS2 v0.111.0, this fork supports standard singleplayer seeded embark through the game's public seed override. Seeds are canonicalized (uppercase, O→0, I→1). Multiplayer and other flows retain the game's lobby restrictions. |
 
 `game_over` advertises only `main_menu`. `continue` is not actionable on that screen and returns an error.
 If `timeline` is blocked by pending obtained epochs, `menu_select` returns an error with `manual_action_required: true` and `pending_epoch_ids` instead of opening Timeline.

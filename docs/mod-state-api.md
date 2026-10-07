@@ -96,6 +96,38 @@ Dream indices belong to a separate hand and are not supported by that action.
 Dream cards are exposed as state with `standard_hand_action_supported: false`;
 `leave_dream` uses the existing animated, synchronized native action.
 
+### Complete dream state
+
+`player.mod_state.WitnessWeaver.dream_realm` exposes the actual independent
+hand **and** folded bank, including during transitions:
+
+| Field | Meaning |
+| --- | --- |
+| `hand`, `bank`, their `_count` fields, `total_cards_count` | Real pile membership; `cards`/`cards_count` remain aliases for the currently open or folded pile |
+| `visible_hand`, `is_open`, `is_transitioning` | Current presentation and transition state; wait for transitions before acting |
+| `energy`, `energy_source_form`, `energy_shared_with_active_form` | Exact current energy, shared with the active form; null outside combat |
+| `can_enter`, `entry_trigger`, `entry_card_indices` | Rule eligibility and native hand indices of cards carrying the Dream Realm keyword; entry occurs by playing one of those cards, with its own cost/playability checks |
+| `entry_limit_reached`, `extra_entries`, `last_entry_turn`, `last_exit_turn`, `current_turn` | Shared entry allowance and player turn numbers |
+| `long_dream_active`, `ends_turn_on_exit`, `exits_after_manual_card_play`, `can_leave` | Long-dream and ordinary exit behavior, plus exit availability |
+| `entry_energy_bonus`, `entry_block_bonus`, `dream_growth` | Actual bonuses and accumulated dream growth |
+| `pending_returns`, `pending_count` | Phantom return tickets, each with a card, destination, form, due turn and remaining turns |
+
+Each dream card includes native name, description, cost, target, upgrade and
+keywords, plus `index_scope`, actual `can_play`/`unplayable_reason`,
+`original_form` (null for a shared token), `is_phantom`, `exhausts_on_play` and
+`return_delay_turns`. Indices are scoped to `dream_realm.hand` or
+`dream_realm.bank`; ticket cards use `dream_realm.pending_returns`. A pending
+return's `form` records the original play form; `destination` determines
+whether it returns to the shared realm or that form's normal hand.
+
+`can_play` reflects **gameplay eligibility**, including phase, transitions,
+native resource/hook checks and the mod's dream gate. It is separate from
+`automatic_play_supported: false`: the standard MCP hand tool does not yet
+address the independent dream hand. Closed bank cards and pending cards are
+unplayable. This state extension adds no shortcut that opens a realm for free.
+The mod publishes copied return-ticket metadata through public read-only
+properties; snapshots do not exchange forms, draw cards or change return queues.
+
 Draw piles expose membership sorted by rarity and ID, with
 `draw_order_known: false`. They do not leak the next shuffled draw. All reads
 use real cards without exchanging the forms or invoking gameplay commands.
@@ -119,3 +151,19 @@ headless run checks gameplay and action completion; it does not establish
 visible animation quality, two-client co-op behavior, non-empty exhaust-pile
 movement, death handoff, or complete dream-card automation. The previous
 native combat smoke remains available for ordinary bridge regression tests.
+
+Dream-state follow-up validation passed 32 isolated Godot model checks covering
+entry, real playability, stored-card origins, growth/bonuses, phantom return
+tickets, token exhaustion, extra entries, long-dream behavior and cleanup.
+Eight real MCP stdio checks on the native v0.111.0 game verify native card
+display fields, folded/open piles, entry indices, energy source, same-turn
+limits, repeated read stability, hidden native-hand rejection and native exit.
+
+```powershell
+./mcp/.venv/Scripts/python.exe scripts/dream_state_smoke.py --start-new-run
+```
+
+Use a disposable profile's main menu. Local evidence is stored under
+`out/runtime-dream-state/` and `out/runtime-dream-state-native/`. Model tests
+exercise dream cards using native queued actions; they do not implement a
+new MCP dream-hand play command or validate visible animations.

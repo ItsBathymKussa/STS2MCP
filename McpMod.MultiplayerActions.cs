@@ -33,6 +33,7 @@ public static partial class McpMod
 
         return action switch
         {
+            "mod_action" => ExecuteModAction(player, data),
             // Delegated to existing sync-safe handlers
             "play_card" => ExecutePlayCard(player, data),
             "use_potion" => ExecuteUsePotion(player, data),

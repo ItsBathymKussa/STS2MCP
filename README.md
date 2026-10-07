@@ -4,7 +4,7 @@
 
 <p align="center"><em>An Experimental Research Project to Fully-Automate your Slay the Spire 2 Runs</em></p>
 
-**Compatibility fork:** this branch targets STS2 **v0.111.0**. Native game runtime and MCP stdio smoke tests passed with BaseLib 3.4.7 and the WitnessWeaver 0.3.0 custom character. See [changes, test scope, and reproduction steps](docs/compatibility-0.111.md). Full-run balance, custom character controls, multiplayer, and visible animation validation are outside the verified scope.
+**Compatibility fork:** this branch targets STS2 **v0.111.0**. Native game runtime and MCP stdio smoke tests passed with BaseLib 3.4.7 and the WitnessWeaver 0.3.0 custom character. See [compatibility tests](docs/compatibility-0.111.md) and the [optional mod state/action API](docs/mod-state-api.md), including both forms' piles, energy and native switch actions. Full-run balance, multiplayer, and visible animation quality remain outside the verified scope.
 
 A mod for [**Slay the Spire 2**](https://store.steampowered.com/app/2868840/Slay_the_Spire_2/) that lets AI agents play the game. Exposes game state and actions via a localhost REST API, with an optional MCP server for Claude Desktop / Claude Code integration.
 

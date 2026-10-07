@@ -1223,6 +1223,8 @@ public static partial class McpMod
         state["potions"] = potions;
         state["max_potion_slots"] = player.MaxPotionCount;
 
+        state["mod_state"] = BuildModState(player);
+
         return state;
     }
 

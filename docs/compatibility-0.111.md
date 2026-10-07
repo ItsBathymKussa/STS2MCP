@@ -133,9 +133,10 @@ This proves the tested singleplayer bridge flow on v0.111.0, not an entire run
 or multiplayer compatibility. Lobby changes compile against the public APIs;
 two-client co-op and reconnect behavior still need live tests.
 
-The bridge does not yet expose WitnessWeaver's complete reserve state or provide
-actions for Switch Form, Rearrange Form, and neutral-card destination buttons.
-Selecting a fixed-form Weaver reward was verified through the existing native
-reward flow. Full autonomous character testing needs those extra state/actions,
-plus targeted death-handoff, dream-realm, and selection tests. Winning this
-smoke combat does not establish character balance or full mechanic coverage.
+The follow-up [optional mod state/action API](mod-state-api.md) now exposes
+WitnessWeaver's two forms, complete pile membership and current energy, and
+provides native Switch Form, Rearrange Form and Leave Dream actions. Its separate
+runtime smoke validates swaps and energy/pile preservation. Neutral-card
+destination controls, full dream-card automation, death handoff and broader
+selection coverage still need targeted tests. Winning the original smoke
+combat does not establish character balance or full mechanic coverage.

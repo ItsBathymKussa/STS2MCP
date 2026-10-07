@@ -43,6 +43,17 @@ public static partial class McpMod
             return sb.ToString();
         }
 
+        if (state.TryGetValue("player", out var modPlayerObj) && modPlayerObj is Dictionary<string, object?> modPlayer &&
+            modPlayer.TryGetValue("mod_state", out var modStateObj) && modStateObj is Dictionary<string, object?> modState && modState.Count > 0)
+        {
+            sb.AppendLine("## Mod State");
+            sb.AppendLine("Use mod_action with an advertised action ID. Pile indices are local to each form; only active native hand indices can be played.");
+            sb.AppendLine("```json");
+            sb.AppendLine(System.Text.Json.JsonSerializer.Serialize(modState, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+            sb.AppendLine("```");
+            sb.AppendLine();
+        }
+
         // Multiplayer players summary (top-level)
         if (isMultiplayer && state.TryGetValue("players", out var playersListObj)
             && playersListObj is List<Dictionary<string, object?>> playersList && playersList.Count > 0)

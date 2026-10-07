@@ -176,6 +176,23 @@ async def get_game_state(format: str = "markdown") -> str:
 
 
 @mcp.tool()
+async def mod_action(mod_id: str, mod_action: str, parameters: dict | None = None, multiplayer: bool = False) -> str:
+    """Execute an action explicitly exposed by a mod for the local player.
+
+    Read player.mod_state in get_game_state first for available action IDs and
+    guards (e.g. WitnessWeaver: switch_form, rearrange_form, leave_dream).
+    Queued actions return before animation finishes; poll state for completion.
+    Inactive form hand indices cannot be passed to combat_play_card.
+    """
+    try:
+        post = _mp_post if multiplayer else _post
+        return await post({"action": "mod_action", "mod_id": mod_id,
+                           "mod_action": mod_action, "parameters": parameters or {}})
+    except Exception as e:
+        return _handle_error(e)
+
+
+@mcp.tool()
 async def menu_select(option: str, seed: str | None = None) -> str:
     """Select a visible menu option.
 

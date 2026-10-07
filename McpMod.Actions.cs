@@ -63,6 +63,7 @@ public static partial class McpMod
 
         return action switch
         {
+            "mod_action" => ExecuteModAction(player, data),
             "play_card" => ExecutePlayCard(player, data),
             "use_potion" => ExecuteUsePotion(player, data),
             "discard_potion" => ExecuteDiscardPotion(player, data),
